@@ -1,14 +1,13 @@
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import { PostList } from "./components/PostLists";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div>
-      <h5>HELLO WORLD</h5>
-      <PostList />
-    </div>
+    <Routes>
+      <Route path="/" element={<PostList />} />
+      <Route path="/posts/:id" element={null} />
+    </Routes>
   );
 }
 
