@@ -6,7 +6,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<PostList />} />
-      <Route path="/posts/:id" element={null} />
+      <Route path="/posts/:id" element={<h1>Post</h1>} />
     </Routes>
   );
 }
