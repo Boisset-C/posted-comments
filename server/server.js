@@ -15,7 +15,7 @@ app.register(cors, {
 const prisma = new PrismaClient();
 
 app.get("/posts", async (req, res) => {
-  return await commentToDb(
+  return await commitToDb(
     prisma.post.findMany({
       select: {
         id: true,
@@ -25,8 +25,8 @@ app.get("/posts", async (req, res) => {
   );
 });
 
-app.get("/posts:id", async (req, res) => {
-  return await commentToDb(
+app.get("/posts/:id", async (req, res) => {
+  return await commitToDb(
     prisma.post.findUnique({
       where: {
         id: req.params.id,
@@ -41,10 +41,13 @@ app.get("/posts:id", async (req, res) => {
           select: {
             id: true,
             message: true,
+            parentId: true,
             createdAt: true,
             user: {
-              id: true,
-              name: true,
+              select: {
+                id: true,
+                name: true,
+              },
             },
           },
         },
@@ -53,7 +56,7 @@ app.get("/posts:id", async (req, res) => {
   );
 });
 
-async function commentToDb(promise) {
+async function commitToDb(promise) {
   const [error, data] = await app.to(promise);
   if (error) return app.httpErrors.internalServerError(error.message);
   return data;

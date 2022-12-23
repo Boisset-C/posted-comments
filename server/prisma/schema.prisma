@@ -14,7 +14,7 @@ model Post {
   id      String    @id @default(uuid())
   title   String
   body    String
-  Comment Comment[]
+  comments Comment[]
 }
 
 model User {
