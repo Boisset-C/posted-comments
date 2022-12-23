@@ -25,6 +25,34 @@ app.get("/posts", async (req, res) => {
   );
 });
 
+app.get("/posts:id", async (req, res) => {
+  return await commentToDb(
+    prisma.post.findUnique({
+      where: {
+        id: req.params.id,
+      },
+      select: {
+        body: true,
+        title: true,
+        comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          select: {
+            id: true,
+            message: true,
+            createdAt: true,
+            user: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    })
+  );
+});
+
 async function commentToDb(promise) {
   const [error, data] = await app.to(promise);
   if (error) return app.httpErrors.internalServerError(error.message);
