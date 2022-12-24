@@ -6,7 +6,6 @@ const api = axios.create({
 });
 
 export function makeRequest(url, options) {
-  console.log(url);
   return api(url, options)
     .then((res) => res.data)
     .catch((error) =>
