@@ -13,7 +13,7 @@ export function Comment({ id, message, user, createdAt }) {
   const { getReplies } = usePost();
   //passing in root comment id, to retrieve its relative children comments
   const childComments = getReplies(id);
-  const { areChildrenHidden, setAreChildrenHidden } = useState(false);
+  const [areChildrenHidden, setAreChildrenHidden] = useState(false);
   return (
     <>
       <div className="comment">
