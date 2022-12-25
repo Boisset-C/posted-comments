@@ -36,6 +36,24 @@ export function PostProvider({ children }) {
     });
   }
 
+  function updateLocalComment(id, message) {
+    setComments((prevComments) => {
+      return prevComments.map((comment) => {
+        if (comment.id === id) {
+          return { ...comment, message };
+        } else {
+          return comment;
+        }
+      });
+    });
+  }
+
+  function deleteLocalComment(id) {
+    setComments((prevComments) => {
+      return prevComments.filter((comment) => comment.id !== id);
+    });
+  }
+
   function getReplies(parentId) {
     return commentsByParentId[parentId];
   }
@@ -47,6 +65,8 @@ export function PostProvider({ children }) {
         rootComments: commentsByParentId[null],
         getReplies,
         createLocalComment,
+        updateLocalComment,
+        deleteLocalComment,
       }}
     >
       {loading ? (
