@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IconBtn } from "./IconButton";
-import { FaHeart, FaReply, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHeart, FaReply, FaEdit, FaTrash, FaRegHeart } from "react-icons/fa";
 import { usePost } from "../context/PostContext";
 import { CommentList } from "./CommentList";
 import { CommentForm } from "./CommentForm";
@@ -8,6 +8,7 @@ import { useAsyncFn } from "../hooks/useAsync";
 import {
   createComment,
   deleteComment,
+  toggleCommentLike,
   updateComment,
 } from "../services/comment";
 import { useUser } from "../hooks/useUser";
@@ -17,7 +18,14 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   timeStyle: "short",
 });
 
-export function Comment({ id, message, user, createdAt }) {
+export function Comment({
+  id,
+  message,
+  user,
+  createdAt,
+  likedByMe,
+  likeCount,
+}) {
   const [areChildrenHidden, setAreChildrenHidden] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -27,10 +35,12 @@ export function Comment({ id, message, user, createdAt }) {
     createLocalComment,
     updateLocalComment,
     deleteLocalComment,
+    toggleLocalCommentLike,
   } = usePost();
   const createCommentFn = useAsyncFn(createComment);
   const updateCommentFn = useAsyncFn(updateComment);
   const deleteCommentFn = useAsyncFn(deleteComment);
+  const toggleCommentLikeFn = useAsyncFn(toggleCommentLike);
   //passing in root comment id, to retrieve its relative children comments
   const childComments = getReplies(id);
   const currentUser = useUser();
@@ -59,6 +69,11 @@ export function Comment({ id, message, user, createdAt }) {
       .then((comment) => deleteLocalComment(comment.id));
   };
 
+  const onToggleCommentLike = () => {
+    return toggleCommentLikeFn
+      .execute({ id, postId: post.id })
+      .then(({ addLike }) => toggleLocalCommentLike(id, addLike));
+  };
   return (
     <>
       <div className="comment">
@@ -80,8 +95,13 @@ export function Comment({ id, message, user, createdAt }) {
           <div className="message">{message}</div>
         )}
         <div className="footer">
-          <IconBtn Icon={FaHeart} aria-label="like">
-            2
+          <IconBtn
+            onClick={onToggleCommentLike}
+            disabled={toggleCommentLikeFn.loading}
+            Icon={likedByMe ? FaHeart : FaRegHeart}
+            aria-label={likedByMe ? "Unlike" : "Like"}
+          >
+            {likeCount}
           </IconBtn>
           <IconBtn
             onClick={() => setIsReplying((prev) => !prev)}
